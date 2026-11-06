@@ -1,5 +1,6 @@
 # Render Blueprint: one web service (HTTPS on *.onrender.com) + managed Postgres.
-# Deploy: Render Dashboard → New → Blueprint → pick this repo. Then set APP_URL.
+# Deploy: Render Dashboard → New → Blueprint → pick this repo.
+# Invite links use RENDER_EXTERNAL_URL unless APP_URL is set (e.g. for a custom domain).
 services:
   - type: web
     name: stackquest
@@ -11,8 +12,6 @@ services:
         fromDatabase:
           name: stackquest-db
           property: connectionString
-      - key: APP_URL
-        sync: false # e.g. https://stackquest.onrender.com or your custom domain
       - key: DEMO_MODE
         value: "false"
       - key: DATABASE_SSL

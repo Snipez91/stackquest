@@ -14,8 +14,8 @@ platforms with short request limits are a poor fit for the realtime stream.
 1. Push this repository to GitHub or GitLab.
 2. In Render: **New → Blueprint**, pick the repository, and apply. This creates
    `stackquest` (web) and `stackquest-db` (Postgres) and wires `DATABASE_URL`.
-3. When prompted (or in the service's Environment tab), set
-   `APP_URL=https://<your-service>.onrender.com` (or your custom domain).
+3. Invite links use Render's `RENDER_EXTERNAL_URL` automatically. If you add a
+   custom domain, set `APP_URL` to it in the service's Environment tab.
 4. Wait for the deploy. Migrations run automatically on first start.
    `GET /api/health` should return `{"ok":true,...}`.
 5. Open the URL, create your account, create the team, and invite people
@@ -54,7 +54,7 @@ transaction mode break `LISTEN`, so give the app a direct connection string.
 | Variable | Required | Notes |
 | --- | --- | --- |
 | `DATABASE_URL` | yes | Without it, the app falls back to local PGlite, which isn't for production. |
-| `APP_URL` | yes | Used to build invitation links. |
+| `APP_URL` | yes, except on Render | Used to build invitation links. On Render it defaults to `RENDER_EXTERNAL_URL`; set it for a custom domain. |
 | `DATABASE_SSL` | no | Defaults to TLS for remote hosts. Set `false` only on a private network. |
 | `DATABASE_SSL_STRICT` | no | `true` verifies the server certificate (recommended where supported). |
 | `AUTO_MIGRATE` | no | Set `false` and run `npm run db:migrate` as a release step if you prefer. |

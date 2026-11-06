@@ -79,7 +79,8 @@ export async function createInviteAction(_: InviteState, form: FormData): Promis
       maxUses: Number(form.get("maxUses") ?? 1),
       label: String(form.get("label") ?? "") || undefined,
     });
-    const base = process.env.APP_URL?.replace(/\/$/, "") ?? "";
+    // RENDER_EXTERNAL_URL is set automatically on Render.
+    const base = (process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || "").replace(/\/$/, "");
     revalidatePath("/admin");
     return { ok: "Invitation created. Copy the link now — for security it won't be shown again.", link: `${base}/invite/${token}` };
   } catch (e) {
