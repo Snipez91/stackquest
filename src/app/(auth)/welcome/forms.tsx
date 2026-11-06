@@ -1,14 +1,14 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState } from "react";
+import { useBrowserTimeZone } from "@/lib/use-browser";
 import { createTeamAction, joinByLinkAction } from "@/app/actions/team";
 import type { FormState } from "@/app/actions/auth";
 import { FormError, SubmitButton } from "@/components/forms";
 
 export function CreateTeamForm() {
   const [state, action] = useActionState<FormState, FormData>(createTeamAction, undefined);
-  const [tz, setTz] = useState("UTC");
-  useEffect(() => setTz(Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"), []);
+  const tz = useBrowserTimeZone();
   return (
     <form action={action} className="space-y-3">
       <FormError message={state?.error} />

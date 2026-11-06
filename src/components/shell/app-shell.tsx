@@ -89,7 +89,7 @@ export function AppShell({ me, team, teams, isAdmin, dueCount, children }: { me:
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className={cn("flex min-w-0 flex-1 flex-col", inWorkspace && "md:h-screen")}>
           {team.isDemo && (
             <div role="note" className="border-b border-warning/40 bg-warning/10 px-4 py-1.5 text-center text-xs">
               <strong>Demo data — fictional.</strong> Teammates, activity and messages in this team are made up for demonstration.
@@ -102,16 +102,16 @@ export function AppShell({ me, team, teams, isAdmin, dueCount, children }: { me:
             </Link>
             <span className="truncate text-xs text-muted">{team.name}</span>
           </header>
-          <main id="main" className={cn("flex-1 pb-20 md:pb-0", inWorkspace ? "" : "mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:py-8")}>
+          <main id="main" className={cn("flex-1 pb-20 md:pb-0", inWorkspace ? "md:min-h-0 md:overflow-hidden" : "mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:py-8")}>
             {children}
           </main>
         </div>
 
         {/* Floating chat button: opens the drawer without leaving the page (workspace state is kept). */}
-        {pathname !== "/chat" && (
+        {pathname !== "/chat" && !inWorkspace && (
           <button
             onClick={() => openChat()}
-            className="fixed right-4 bottom-20 z-30 inline-flex items-center gap-2 rounded-full border border-border-strong bg-surface-2 px-4 py-2.5 text-sm font-medium shadow-lg shadow-black/30 hover:bg-surface-3 md:bottom-5"
+            className="fixed right-4 bottom-20 z-30 hidden items-center md:inline-flex gap-2 rounded-full border border-border-strong bg-surface-2 px-4 py-2.5 text-sm font-medium shadow-lg shadow-black/30 hover:bg-surface-3 md:bottom-5"
             aria-label={`Open team chat${unread ? `, ${unread} unread` : ""}`}
           >
             <MessagesSquare aria-hidden size={17} />

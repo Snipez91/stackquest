@@ -146,9 +146,9 @@ export const mission: MissionInput = {
     "The dispatch dashboard cannot load routes. Follow the failure from the browser console through the proxy to api-01, fix a key permission and a stale resolver, and prove the path works.",
   minutes: 45,
   assessmentTypes: ["investigate-logs", "configure-system", "order-steps", "explain-root-cause"],
-  skills: [],
-  appliesSkills: [],
-  prerequisites: [],
+  skills: ["lx.troubleshooting", "lx.permissions", "net.dns"],
+  appliesSkills: ["lx.services", "lx.logs", "lx.users-groups", "net.ports", "net.troubleshooting", "js.fetch"],
+  prerequisites: ["cap-nightly-export-job", "lx-handoff-permissions", "net-dns-name-vs-ip"],
   brief: {
     from: "Priya Raman, SRE lead",
     channel: "#incidents",
@@ -361,7 +361,7 @@ labeld[901]: open() "/var/spool/labels" failed (13: Permission denied)
         feedback: {
           what: "On api-01, the user svc-routes still cannot read /etc/routes-api/tls/api.key.",
           why: "routes-api loads the key at startup and exits with PermissionError when it cannot. Until the service user can read it, nothing listens on 8443 and nginx keeps returning 502.",
-          next: "Compare `ls -l` of api.key with the retired api.key.2025 next to it. Restore the ownership the service relies on (group svc-routes with group read).",
+          next: "Compare `sudo ls -l` of api.key with the retired api.key.2025 next to it. Restore the ownership the service relies on (group svc-routes with group read).",
         },
       },
       {
@@ -573,7 +573,7 @@ curl -s -o /dev/null -w '%{http_code}\\n' https://api-01.lumen.internal:8443/hea
   review: [
     {
       id: "cap-follow-the-hop",
-      skill: "lx.services",
+      skill: "lx.troubleshooting",
       variants: [
         {
           id: "cap-follow-the-hop-a",

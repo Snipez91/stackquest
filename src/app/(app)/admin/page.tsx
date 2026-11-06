@@ -7,6 +7,10 @@ import { InviteForm, MemberControls, RevokeButton, TeamSettingsForm } from "./fo
 
 export const metadata = { title: "Team admin" };
 
+function isFuture(d: Date | null) {
+  return !!d && d.getTime() > Date.now();
+}
+
 function inviteStatus(i: { revokedAt: Date | null; expiresAt: Date; uses: number; maxUses: number }) {
   if (i.revokedAt) return "Revoked";
   if (i.expiresAt.getTime() <= Date.now()) return "Expired";
@@ -71,7 +75,7 @@ export default async function AdminPage() {
         <h2 className="font-semibold">Members</h2>
         <ul className="mt-3 divide-y divide-border">
           {members.map((m) => {
-            const muted = !!m.mutedUntil && m.mutedUntil.getTime() > Date.now();
+            const muted = isFuture(m.mutedUntil);
             return (
               <li key={m.userId} className="flex flex-wrap items-center gap-3 py-3">
                 <Avatar name={m.displayName} hue={m.avatarHue} size={30} />

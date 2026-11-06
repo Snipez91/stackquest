@@ -60,6 +60,8 @@ export function ChatPanel({ me, initialChannelId, missionSlug, compact = false }
   }, [initialChannelId, missionSlug]);
 
   useEffect(() => {
+    // Data fetch on mount; state is set after the request resolves.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadChannels();
   }, [loadChannels]);
 
@@ -193,6 +195,8 @@ function MessagePane({ me, channel, onRead, rtStatus, online }: { me: Me; channe
   }, [channel.id, markRead]);
 
   useEffect(() => {
+    // Data fetch on mount; state is set after the request resolves.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
   }, [load]);
 

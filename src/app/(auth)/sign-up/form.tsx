@@ -1,19 +1,13 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState } from "react";
+import { useBrowserTimeZone } from "@/lib/use-browser";
 import { signUpAction, type FormState } from "@/app/actions/auth";
 import { FormError, SubmitButton } from "@/components/forms";
 
 export function SignUpForm({ invite }: { invite?: string }) {
   const [state, action] = useActionState<FormState, FormData>(signUpAction, undefined);
-  const [tz, setTz] = useState("UTC");
-  useEffect(() => {
-    try {
-      setTz(Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC");
-    } catch {
-      /* keep UTC */
-    }
-  }, []);
+  const tz = useBrowserTimeZone();
   return (
     <form action={action} className="space-y-4">
       <FormError message={state?.error} />

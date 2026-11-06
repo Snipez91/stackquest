@@ -17,6 +17,13 @@ import { cn } from "@/lib/cn";
 
 export const metadata = { title: "Team" };
 
+function daysAgo(n: number) {
+  return new Date(Date.now() - n * 86_400_000);
+}
+function isFuture(d: Date) {
+  return d.getTime() > Date.now();
+}
+
 function fmtDuration(ms: number | null) {
   if (ms === null) return "—";
   const s = Math.round(ms / 1000);
@@ -36,7 +43,7 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
     teamProgress(db, user.id, team.id),
     recentActivity(db, user.id, team.id, 15),
     goalsWithProgress(db, user.id, team.id),
-    db.select().from(races).where(and(eq(races.teamId, team.id), gte(races.endsAt, new Date(Date.now() - 7 * 86_400_000)))).orderBy(desc(races.startsAt)).limit(5),
+    db.select().from(races).where(and(eq(races.teamId, team.id), gte(races.endsAt, daysAgo(7)))).orderBy(desc(races.startsAt)).limit(5),
   ]);
   const raceBoards = await Promise.all(liveRaces.map((r) => raceBoard(db, user.id, team.id, r.id)));
   const q = (b: string, t?: string) => `/team?board=${b}${t ? `&track=${t}` : ""}`;
@@ -163,7 +170,7 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
         <ul className="mt-3 space-y-3">
           {raceBoards.map((rb) => {
             if (!rb) return null;
-            const open = rb.race.endsAt.getTime() > Date.now();
+            const open = isFuture(rb.race.endsAt);
             const mine = rb.entries.find((e) => e.userId === user.id);
             return (
               <li key={rb.race.id} className="rounded-lg border border-border bg-surface-2 p-3">

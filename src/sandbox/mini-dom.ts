@@ -78,13 +78,11 @@ export class SimElement {
   constructor(tag: string) {
     this.tagName = tag.toUpperCase();
     this.classList = new ClassList(this);
-    const self = this;
+    const attr = (k: string) => "data-" + k.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase());
     this.dataset = new Proxy({} as Record<string, string>, {
-      get(_t, k: string) {
-        return self.getAttribute("data-" + k.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase())) ?? undefined;
-      },
-      set(_t, k: string, v: string) {
-        self.setAttribute("data-" + k.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase()), String(v));
+      get: (_t, k: string) => this.getAttribute(attr(k)) ?? undefined,
+      set: (_t, k: string, v: string) => {
+        this.setAttribute(attr(k), String(v));
         return true;
       },
     });
@@ -189,7 +187,8 @@ export class SimElement {
     return this.children.length;
   }
   closest(sel: string): SimElement | null {
-    let el: SimElement | null = this;
+    if (matches(this, sel)) return this;
+    let el = this.parentElement;
     while (el) {
       if (matches(el, sel)) return el;
       el = el.parentElement;
@@ -213,12 +212,12 @@ export class SimElement {
   }
   dispatchEvent(ev: SimEvent) {
     if (!ev.target) ev.target = this;
-    let el: SimElement | null = this;
-    while (el) {
+    const path: SimElement[] = [];
+    for (let p: SimElement | null = this.parentElement; p; p = p.parentElement) path.push(p);
+    for (const el of [this as SimElement, ...path]) {
       ev.currentTarget = el;
       for (const fn of [...(el.listeners.get(ev.type) ?? [])]) fn.call(el, ev);
       if (!ev.bubbles || ev.propagationStopped) break;
-      el = el.parentElement;
     }
     return !ev.defaultPrevented;
   }

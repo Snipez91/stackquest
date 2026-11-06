@@ -470,8 +470,10 @@ const cp: CommandFn = (ctx) => {
     }
   };
   for (const s of srcs) {
-    const target = dstIsDir ? joinPath(dstNode!.path, basename(ctx.abs(s))) : dstAbs;
-    const disp = dstIsDir ? dstArg.replace(/\/$/, "") + "/" + basename(s) : dstArg;
+    // like GNU cp, `cp -r dir/. existing/` copies dir's contents into existing/ itself
+    const dotSrc = /(^|\/)\.\/*$/.test(s);
+    const target = dstIsDir && !dotSrc ? joinPath(dstNode!.path, basename(ctx.abs(s))) : dstIsDir ? dstNode!.path : dstAbs;
+    const disp = dstIsDir && !dotSrc ? dstArg.replace(/\/$/, "") + "/" + basename(s) : dstArg;
     copyOne(ctx.abs(s), s, target, disp);
   }
   return code;

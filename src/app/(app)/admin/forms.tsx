@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useActionState, useState, useTransition } from "react";
+import { useOrigin } from "@/lib/use-browser";
 import { changeRoleAction, createInviteAction, muteMemberAction, removeMemberAction, revokeInviteAction, updateTeamAction, type InviteState } from "@/app/actions/team";
 import type { FormState } from "@/app/actions/auth";
 import { FormError, FormOk, SubmitButton } from "@/components/forms";
@@ -9,8 +10,7 @@ import { COMMON_TIME_ZONES } from "@/lib/time";
 export function InviteForm() {
   const [state, action] = useActionState<InviteState, FormData>(createInviteAction, undefined);
   const [copied, setCopied] = useState(false);
-  const [origin, setOrigin] = useState("");
-  useEffect(() => setOrigin(window.location.origin), []);
+  const origin = useOrigin();
   const link = state?.link ? (state.link.startsWith("http") ? state.link : origin + state.link) : null;
   return (
     <form action={action} className="space-y-3">

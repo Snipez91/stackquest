@@ -52,6 +52,8 @@ export function ReviewSession() {
     }
   }, []);
   useEffect(() => {
+    // Data fetch on mount; state is set after the request resolves.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
   }, [load]);
 
@@ -153,22 +155,28 @@ export function ReviewSession() {
         {item.context && <p className="mb-3 rounded-lg bg-surface-2 p-3 text-sm whitespace-pre-wrap">{item.context}</p>}
         {!result ? (
           <>
-            <QuestionCard q={item.question} onSubmit={submit} />
-            <fieldset className="mt-4">
-              <legend className="mb-1.5 text-xs font-semibold text-muted">How sure are you? (affects when you see this again)</legend>
-              <div className="flex flex-wrap gap-1.5">
-                {CONF.map((c) => (
-                  <label key={c.v} className={cn("cursor-pointer rounded-full border px-3 py-1 text-xs", confidence === c.v ? "border-primary bg-primary/10 text-text" : "border-border text-muted")}>
-                    <input type="radio" className="sr-only" name="conf" checked={confidence === c.v} onChange={() => setConfidence(c.v)} />
-                    {c.label}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
+            <QuestionCard
+              q={item.question}
+              onSubmit={submit}
+              beforeSubmit={
+                <fieldset>
+                  <legend className="mb-1.5 text-xs font-semibold text-muted">How sure are you? (affects when you see this again)</legend>
+                  <div className="flex flex-wrap gap-1.5">
+                    {CONF.map((c) => (
+                      <label key={c.v} className={cn("cursor-pointer rounded-full border px-3 py-1 text-xs has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-[var(--focus)]", confidence === c.v ? "border-primary bg-primary/10 text-text" : "border-border text-muted")}>
+                        <input type="radio" className="sr-only" name="conf" checked={confidence === c.v} onChange={() => setConfidence(c.v)} />
+                        {c.label}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              }
+            />
           </>
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted">{item.question.prompt}</p>
+            {item.question.code && <pre className="overflow-x-auto rounded-lg border border-border bg-code p-3 font-mono text-[13px]">{item.question.code}</pre>}
             <GradeFeedback grade={result} />
             <p className="text-xs text-muted">
               Next review: <time dateTime={result.nextDue}>{result.nextDue}</time>

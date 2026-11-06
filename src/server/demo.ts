@@ -49,7 +49,7 @@ export async function ensureDemoData(db: Db) {
 
   const [learner] = await db
     .insert(users)
-    .values({ email: DEMO_LEARNER_EMAIL, displayName: "You (demo learner)", handle: "demolearner", passwordHash: unusable, isDemo: true, activeTeamId: team.id, avatarHue: 210 })
+    .values({ email: DEMO_LEARNER_EMAIL, displayName: "Jordan Park (demo)", handle: "demolearner", passwordHash: unusable, isDemo: true, activeTeamId: team.id, avatarHue: 210 })
     .onConflictDoUpdate({ target: users.email, set: { activeTeamId: team.id } })
     .returning();
   await db.insert(memberships).values({ teamId: team.id, userId: learner.id, role: "admin" }).onConflictDoNothing();

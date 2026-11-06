@@ -57,6 +57,8 @@ export function Workspace({ mission, attempt: initial, theme, previouslyComplete
 
   useEffect(() => {
     try {
+      // Read a per-browser preference after hydration (server can't know it).
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPlain(localStorage.getItem("sq-plain-editor") === "1");
     } catch {
       /* storage unavailable */
@@ -115,12 +117,11 @@ export function Workspace({ mission, attempt: initial, theme, previouslyComplete
   }, [ws.kind]);
 
   // ------------------------------------------------------------ shell state
-  const simRef = useRef<Simulation | null>(null);
+  const [sim, setSim] = useState<Simulation | null>(null);
   const [events, setEvents] = useState<SimEvent[]>([]);
   const [lines, setLines] = useState<TermLine[]>([]);
   const [shellTab, setShellTab] = useState<"terminal" | string>("terminal");
   const [editorText, setEditorText] = useState<Record<string, string>>({});
-  const [, force] = useState(0);
 
   useEffect(() => {
     if (ws.kind !== "shell") return;
@@ -142,11 +143,12 @@ export function Workspace({ mission, attempt: initial, theme, previouslyComplete
       }
     }
     if (saved.length) restored.push({ kind: "info", text: `Restored your previous session (${saved.length} step${saved.length === 1 ? "" : "s"}).` });
-    simRef.current = sim;
+    // Build the lab from the scenario + saved event log (an external, mutable system).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSim(sim);
     setEvents(saved);
     setLines(restored);
     setEditorText(Object.fromEntries(ws.scenario.editableFiles?.map((p) => [p, sim.readFile(p) ?? ""]) ?? []));
-    force((n) => n + 1);
   }, [ws, initial.draft]);
 
   const pushEvent = (e: SimEvent) => {
@@ -162,10 +164,11 @@ export function Workspace({ mission, attempt: initial, theme, previouslyComplete
     setChecks(null);
     setOutput(null);
     if (ws.kind === "shell") {
-      simRef.current = new Simulation(ws.scenario);
+      const fresh = new Simulation(ws.scenario);
+      setSim(fresh);
       setEvents([]);
       setLines([{ kind: "info", text: "Lab reset to its starting state." }]);
-      setEditorText(Object.fromEntries(ws.scenario.editableFiles?.map((p) => [p, simRef.current!.readFile(p) ?? ""]) ?? []));
+      setEditorText(Object.fromEntries(ws.scenario.editableFiles?.map((p) => [p, fresh.readFile(p) ?? ""]) ?? []));
       setShellTab("terminal");
       queueSave({ events: [] });
     } else if (ws.kind === "python" || ws.kind === "javascript") {
@@ -473,7 +476,7 @@ export function Workspace({ mission, attempt: initial, theme, previouslyComplete
         </div>
       </div>
     );
-  } else if (ws.kind === "shell" && simRef.current) {
+  } else if (ws.kind === "shell" && sim) {
     const editable = ws.scenario.editableFiles ?? [];
     workArea = (
       <div className="flex h-full min-h-0 flex-col">
@@ -490,7 +493,7 @@ export function Workspace({ mission, attempt: initial, theme, previouslyComplete
         </div>
         <div className="min-h-[300px] flex-1 overflow-hidden">
           {shellTab === "terminal" ? (
-            <Terminal sim={simRef.current} lines={lines} setLines={setLines} onCommand={(line) => pushEvent({ t: "cmd", line })} starterCommands={ws.starterCommands} />
+            <Terminal sim={sim} lines={lines} setLines={setLines} onCommand={(line) => pushEvent({ t: "cmd", line })} starterCommands={ws.starterCommands} />
           ) : (
             <div className="flex h-full flex-col">
               <div className="min-h-0 flex-1">
@@ -500,7 +503,7 @@ export function Workspace({ mission, attempt: initial, theme, previouslyComplete
                 <button
                   className="btn-secondary"
                   onClick={() => {
-                    const r = simRef.current!.writeFile(shellTab, editorText[shellTab] ?? "");
+                    const r = sim.writeFile(shellTab, editorText[shellTab] ?? "");
                     if (!r.ok) {
                       setError(`Couldn't save: ${r.error ?? "unknown error"}`);
                       return;
@@ -563,7 +566,7 @@ export function Workspace({ mission, attempt: initial, theme, previouslyComplete
   );
 
   return (
-    <div className="flex h-[calc(100dvh-0px)] min-h-0 flex-col max-md:h-auto">
+    <div className="flex min-h-0 flex-col md:h-full">
       {/* Top bar */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border bg-surface px-4 py-2.5">
         <Link href={`/paths/${mission.track}`} className="btn-ghost -ml-2 px-2 py-1" aria-label="Back to learning path">
@@ -679,13 +682,16 @@ export function Workspace({ mission, attempt: initial, theme, previouslyComplete
         ))}
       </div>
 
-      <div className="grid min-h-0 flex-1 md:grid-cols-[minmax(300px,380px)_1fr] xl:grid-cols-[minmax(320px,400px)_1fr_minmax(320px,400px)]">
-        <aside className={cn("min-h-0 border-r border-border bg-surface max-md:min-h-[60vh]", mobileTab !== "brief" && "max-md:hidden")}>{left}</aside>
-        <section aria-label="Workspace" className={cn("min-h-0 min-w-0", mobileTab !== "work" && "max-md:hidden")}>
+      {/* One copy of each panel. md: brief | work, questions below work. xl: three columns. */}
+      <div className="grid min-h-0 flex-1 md:grid-cols-[minmax(300px,380px)_1fr] md:grid-rows-[minmax(0,1fr)_auto] md:overflow-y-auto xl:grid-cols-[minmax(320px,400px)_1fr_minmax(320px,400px)] xl:grid-rows-1 xl:overflow-hidden">
+        <aside className={cn("min-h-0 border-r border-border bg-surface max-md:min-h-[60vh] md:row-span-2 xl:row-span-1", mobileTab !== "brief" && "max-md:hidden")}>{left}</aside>
+        <section aria-label="Workspace" className={cn("min-h-0 min-w-0 md:min-h-[560px] xl:min-h-0", mobileTab !== "work" && "max-md:hidden")}>
           {workArea}
-          <div className="hidden overflow-y-auto border-t border-border md:block xl:hidden">{questions}</div>
         </section>
-        <aside aria-label="Questions" className={cn("min-h-0 overflow-y-auto border-l border-border md:hidden xl:block", mobileTab === "questions" && "max-md:block")}>
+        <aside
+          aria-label="Questions"
+          className={cn("min-h-0 border-border md:col-start-2 md:border-t xl:col-start-3 xl:row-start-1 xl:overflow-y-auto xl:border-t-0 xl:border-l", mobileTab !== "questions" && "max-md:hidden")}
+        >
           {questions}
           {canFinish && (
             <div className="p-4 pt-0">

@@ -30,11 +30,8 @@ export function Terminal({
   const [suggest, setSuggest] = useState<string[]>([]);
   const logRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [prompt, setPrompt] = useState(() => sim.prompt());
-
-  useEffect(() => {
-    setPrompt(sim.prompt());
-  }, [sim, lines]);
+  // The simulation is mutable; every command updates `lines`, which re-renders this.
+  const prompt = sim.prompt();
 
   useEffect(() => {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
@@ -58,7 +55,6 @@ export function Terminal({
         return next.slice(-600);
       });
     }
-    setPrompt(sim.prompt());
     setInput("");
     setHistIdx(null);
     setSuggest([]);

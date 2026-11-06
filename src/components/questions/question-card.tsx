@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { ArrowDown, ArrowUp, Check, X } from "lucide-react";
 import type { Answer } from "@/lib/grading";
 import { cn } from "@/lib/cn";
@@ -34,6 +34,7 @@ export function QuestionCard({
   disabled,
   promptHtml,
   label,
+  beforeSubmit,
 }: {
   q: ClientQuestion;
   onSubmit: (a: Answer) => Promise<void> | void;
@@ -42,6 +43,8 @@ export function QuestionCard({
   /** Pre-rendered prompt markdown (server-rendered). Falls back to plain text. */
   promptHtml?: string;
   label?: string;
+  /** Extra controls shown above the submit button (e.g. a confidence rating). */
+  beforeSubmit?: ReactNode;
 }) {
   const id = useId();
   const [choice, setChoice] = useState<number | null>(null);
@@ -143,6 +146,7 @@ export function QuestionCard({
         </div>
       )}
 
+      {!solved && beforeSubmit}
       {!solved && (
         <button type="submit" className="btn-primary" disabled={!a || busy || disabled}>
           {busy ? "Checking…" : grade ? "Try again" : "Check answer"}
@@ -151,6 +155,23 @@ export function QuestionCard({
 
       {grade && <GradeFeedback grade={grade} />}
     </form>
+  );
+}
+
+/** Renders `inline code` in plain explanation text without interpreting HTML. */
+export function InlineText({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(`[^`\n]+`)/g).map((part, i) =>
+        part.startsWith("`") && part.endsWith("`") && part.length > 2 ? (
+          <code key={i} className="rounded bg-surface-3 px-1 py-0.5 font-mono text-[0.9em]">
+            {part.slice(1, -1)}
+          </code>
+        ) : (
+          <span key={i}>{part}</span>
+        ),
+      )}
+    </>
   );
 }
 
@@ -173,9 +194,13 @@ export function GradeFeedback({ grade }: { grade: GradeView }) {
           ))}
         </ul>
       )}
-      {grade.feedback && !grade.correct && !grade.concepts && grade.feedback !== grade.explanation && <p className="mt-1.5 text-muted">{grade.feedback}</p>}
+      {grade.feedback && !grade.correct && !grade.concepts && grade.feedback !== grade.explanation && <p className="mt-1.5 text-muted"><InlineText text={grade.feedback} /></p>}
       {!grade.correct && !grade.explanation && <p className="mt-1.5 text-muted">Think it through once more — the explanation appears after your next try.</p>}
-      {grade.explanation && <p className="mt-1.5">{grade.explanation}</p>}
+      {grade.explanation && (
+        <p className="mt-1.5">
+          <InlineText text={grade.explanation} />
+        </p>
+      )}
       {grade.correctAnswer && !grade.correct && !grade.modelAnswer && (
         <div className="mt-2">
           <p className="text-xs font-semibold text-muted">Correct answer</p>

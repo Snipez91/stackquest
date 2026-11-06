@@ -1,0 +1,24 @@
+# Render Blueprint: one web service (HTTPS on *.onrender.com) + managed Postgres.
+# Deploy: Render Dashboard → New → Blueprint → pick this repo. Then set APP_URL.
+services:
+  - type: web
+    name: stackquest
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: stackquest-db
+          property: connectionString
+      - key: APP_URL
+        sync: false # e.g. https://stackquest.onrender.com or your custom domain
+      - key: DEMO_MODE
+        value: "false"
+      - key: DATABASE_SSL
+        value: "false" # Render's internal connection string is on the private network
+
+databases:
+  - name: stackquest-db
+    plan: basic-256mb
+    databaseName: stackquest

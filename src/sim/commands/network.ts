@@ -46,7 +46,7 @@ function ifaceIndex(h: HostState, i: SimInterface): number {
 function ipAddrBlock(h: HostState, i: SimInterface, brief: boolean): string {
   const lo = i.name === "lo";
   const state = lo ? "UNKNOWN" : i.up ? "UP" : "DOWN";
-  if (brief) return `${i.name.padEnd(16)} ${state.padEnd(14)} ${i.up && i.address ? i.address : ""}\n`;
+  if (brief) return `${i.name.padEnd(16)} ${state.padEnd(14)} ${i.address ?? ""}\n`;
   const flags = lo ? (i.up ? "LOOPBACK,UP,LOWER_UP" : "LOOPBACK") : i.up ? "BROADCAST,MULTICAST,UP,LOWER_UP" : "BROADCAST,MULTICAST";
   let s = `${ifaceIndex(h, i)}: ${i.name}: <${flags}> mtu ${lo ? 65536 : 1500} qdisc ${lo ? "noqueue" : "fq_codel"} state ${state} group default qlen 1000\n`;
   s += lo ? `    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00\n` : `    link/ether ${i.mac} brd ff:ff:ff:ff:ff:ff\n`;

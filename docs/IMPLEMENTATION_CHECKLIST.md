@@ -26,19 +26,27 @@ Durable progress record so work can resume across sessions. Update as items land
 
 ## Status
 
-- [x] Scaffold, config, CSP
-- [x] Content schema + validation suite
-- [x] Python/JS runtimes (Node-verified)
-- [ ] Linux/network simulator (agent)
-- [ ] Python / JavaScript / Linux / Networking content (agents)
-- [ ] Capstones
-- [ ] DB schema + migrations
-- [ ] Auth, sessions, rate limits
-- [ ] Teams, invites, roles
-- [ ] Attempts, grading, mastery, reviews, XP, achievements
-- [ ] Realtime + chat
-- [ ] Sandbox frame + client
-- [ ] Screens (11)
-- [ ] Demo mode seed
-- [ ] Tests (server), e2e
-- [ ] Docs: README, deployment, limitations
+- [x] Scaffold, config, CSP (app + sandbox), standalone build
+- [x] Content schema + validation suite (`tests/content`)
+- [x] Python/JS runtimes (Node-verified) + sandbox frame + watchdog (browser-verified isolation)
+- [x] Linux/network simulator (`src/sim`, 47 tests)
+- [x] Python track (12) · JavaScript track (12)
+- [ ] Linux track (12) · Networking track (12) · Capstones (4) — in progress
+- [x] DB schema + migrations (`drizzle/0000_init.sql`)
+- [x] Auth, sessions, rate limits
+- [x] Teams, invites, roles, moderation
+- [x] Attempts, grading, mastery, reviews, XP, achievements, races, goals
+- [x] Realtime (SSE + LISTEN/NOTIFY) + chat
+- [x] Screens: sign-in/up, invite, welcome, onboarding diagnostic, dashboard, paths, track map,
+      workspace, debrief, review, team/leaderboards, chat, profile, settings, admin, scoring
+- [x] Demo mode seed (fictional, labelled)
+- [x] Tests: unit, server (in-memory Postgres), content, sim, Playwright two-session e2e
+- [x] Docs: README, deployment, team guide, mastery model, security, limitations
+- [ ] Final full-suite run and browser pass after all content lands
+
+## Resume notes
+
+- Dev: `npm run dev` (PGlite in `.data/pglite`; delete it to reset local data).
+- Validate a track: `CONTENT_TRACK=<track> npx vitest run tests/content`.
+- Remaining follow-ups worth doing: password reset (needs email), notification inbox UI,
+  Postgres RLS as defence in depth, formal accessibility audit.

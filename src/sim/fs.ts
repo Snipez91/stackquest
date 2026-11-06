@@ -86,6 +86,13 @@ export class Fs {
     return this.host.fs;
   }
 
+  /** Group for a new entry: the parent's group if the parent is setgid, else the creator's primary group. */
+  newGroup(path: string, owner: string, cred: Cred | null): string {
+    const parent = this.nodes[dirname(path)];
+    if (parent && parent.type === "dir" && parent.mode & 0o2000) return parent.group;
+    return cred ? this.primaryGroup(owner) : "root";
+  }
+
   primaryGroup(user: string): string {
     const g = this.host.groups.find((x) => x.name === user);
     if (g) return g.name;
@@ -207,7 +214,7 @@ export class Fs {
         content,
         mode,
         owner,
-        group: cred ? this.primaryGroup(owner) : "root",
+        group: this.newGroup(real, owner, cred),
         mtime: this.now(),
       };
     }
@@ -219,12 +226,14 @@ export class Fs {
     const { dir, path: real } = this.resolveParent(path, cred);
     if (cred && !hasPerm(dir.node, cred, W)) throw new FsError("EACCES", path, dir.path, "w");
     const owner = cred ? cred.user : "root";
+    // a setgid parent directory passes its setgid bit on to new subdirectories
+    const sgid = dir.node.mode & 0o2000;
     this.nodes[real] = {
       type: "dir",
       content: "",
-      mode: opts.mode ?? 0o777 & ~(opts.umask ?? DEFAULT_UMASK),
+      mode: (opts.mode ?? 0o777 & ~(opts.umask ?? DEFAULT_UMASK)) | sgid,
       owner,
-      group: cred ? this.primaryGroup(owner) : "root",
+      group: this.newGroup(real, owner, cred),
       mtime: this.now(),
     };
     return real;
@@ -235,7 +244,7 @@ export class Fs {
     const { dir, path: real } = this.resolveParent(path, cred);
     if (cred && !hasPerm(dir.node, cred, W)) throw new FsError("EACCES", path, dir.path, "w");
     const owner = cred ? cred.user : "root";
-    this.nodes[real] = { type: "symlink", content: "", target, mode: 0o777, owner, group: cred ? this.primaryGroup(owner) : "root", mtime: this.now() };
+    this.nodes[real] = { type: "symlink", content: "", target, mode: 0o777, owner, group: this.newGroup(real, owner, cred), mtime: this.now() };
   }
 
   children(dirPath: string): string[] {
