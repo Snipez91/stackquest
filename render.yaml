@@ -5,7 +5,7 @@ services:
   - type: web
     name: stackquest
     runtime: docker
-    plan: starter
+    plan: free # sleeps after 15 min idle; use starter for always-on
     healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
@@ -19,5 +19,5 @@ services:
 
 databases:
   - name: stackquest-db
-    plan: basic-256mb
+    plan: free # deleted 30 days after creation; use basic-256mb to keep data
     databaseName: stackquest

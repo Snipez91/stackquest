@@ -23,12 +23,18 @@ platforms with short request limits are a poor fit for the realtime stream.
 
 HTTPS is automatic on `*.onrender.com` and on custom domains you add in Render.
 
-**Costs (check current prices at render.com/pricing before you commit):** the
-Blueprint uses the *Starter* web plan and the smallest paid Postgres plan. When this
-was written that was roughly US$7/month for the web service plus a few dollars a
-month for the database. Render's free tiers exist, but free web services sleep when
-idle (which drops realtime connections) and free databases are time-limited, so
-they're only suitable for a trial.
+**Costs (check current prices at render.com/pricing):** the Blueprint uses Render's
+**free** plans, so it costs $0 but is a trial setup:
+
+- The free web service sleeps after 15 minutes without traffic and takes about a
+  minute to wake. Open chat and live updates disconnect while it sleeps and
+  reconnect afterwards.
+- The free Postgres database is **deleted 30 days after creation**, with all its data.
+  Upgrade it before then to keep your team's progress.
+
+For real team use, add a payment method and switch to `plan: starter` (web, roughly
+US$7/month) and `plan: basic-256mb` (Postgres, a few dollars a month) in
+`render.yaml`, or change the plans in the Render Dashboard.
 
 ## Option B — any container host
 
