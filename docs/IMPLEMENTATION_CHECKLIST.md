@@ -29,9 +29,9 @@ Durable progress record so work can resume across sessions. Update as items land
 - [x] Scaffold, config, CSP (app + sandbox), standalone build
 - [x] Content schema + validation suite (`tests/content`)
 - [x] Python/JS runtimes (Node-verified) + sandbox frame + watchdog (browser-verified isolation)
-- [x] Linux/network simulator (`src/sim`, 47 tests)
+- [x] Linux/network simulator (`src/sim`)
 - [x] Python track (12) · JavaScript track (12)
-- [ ] Linux track (12) · Networking track (12) · Capstones (4) — in progress
+- [x] Linux track (12) · Networking track (12) · Capstones (4)
 - [x] DB schema + migrations (`drizzle/0000_init.sql`)
 - [x] Auth, sessions, rate limits
 - [x] Teams, invites, roles, moderation
@@ -42,7 +42,10 @@ Durable progress record so work can resume across sessions. Update as items land
 - [x] Demo mode seed (fictional, labelled)
 - [x] Tests: unit, server (in-memory Postgres), content, sim, Playwright two-session e2e
 - [x] Docs: README, deployment, team guide, mastery model, security, limitations
-- [ ] Final full-suite run and browser pass after all content lands
+- [x] Final verification (2026-11-06): Vitest 502/502 across 12 files; `tsc` 0 errors; ESLint clean;
+      `next build` OK; Playwright two-session e2e 1/1; browser pass on sign-in, dashboard, Python
+      mission end to end, networking + Linux labs, review (mobile), team, light mode, tablet layout
+- [ ] Not deployed: needs the owner's hosting account (see docs/DEPLOYMENT.md)
 
 ## Resume notes
 

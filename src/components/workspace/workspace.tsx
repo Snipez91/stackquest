@@ -683,9 +683,9 @@ export function Workspace({ mission, attempt: initial, theme, previouslyComplete
       </div>
 
       {/* One copy of each panel. md: brief | work, questions below work. xl: three columns. */}
-      <div className="grid min-h-0 flex-1 md:grid-cols-[minmax(300px,380px)_1fr] md:grid-rows-[minmax(0,1fr)_auto] md:overflow-y-auto xl:grid-cols-[minmax(320px,400px)_1fr_minmax(320px,400px)] xl:grid-rows-1 xl:overflow-hidden">
-        <aside className={cn("min-h-0 border-r border-border/80 bg-surface/60 backdrop-blur-xl max-md:min-h-[60vh] md:row-span-2 xl:row-span-1", mobileTab !== "brief" && "max-md:hidden")}>{left}</aside>
-        <section aria-label="Workspace" className={cn("min-h-0 min-w-0 md:min-h-[560px] xl:min-h-0", mobileTab !== "work" && "max-md:hidden")}>
+      <div className="grid min-h-0 flex-1 md:grid-cols-[minmax(300px,380px)_1fr] md:grid-rows-[auto_auto] md:overflow-y-auto xl:grid-cols-[minmax(320px,400px)_1fr_minmax(320px,400px)] xl:grid-rows-1 xl:overflow-hidden">
+        <aside className={cn("min-h-0 border-r border-border/80 bg-surface/60 backdrop-blur-xl max-md:min-h-[60vh] md:row-span-2 md:max-h-[max(520px,calc(100dvh-150px))] md:sticky md:top-0 xl:row-span-1 xl:static xl:max-h-none", mobileTab !== "brief" && "max-md:hidden")}>{left}</aside>
+        <section aria-label="Workspace" className={cn("min-h-0 min-w-0 md:h-[max(520px,calc(100dvh-150px))] xl:h-auto", mobileTab !== "work" && "max-md:hidden")}>
           {workArea}
         </section>
         <aside

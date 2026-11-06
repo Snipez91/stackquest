@@ -84,9 +84,9 @@ export const mission: MissionInput = {
     "After the shipments API moved to port 9090, the dashboard still calls 8080, and the firewall silently drops 9090. Fix the deployed config and the firewall without exposing the admin port.",
   minutes: 35,
   assessmentTypes: ["investigate-logs", "configure-system", "interpret-output"],
-  skills: ["net.ports", "net.troubleshooting", "js.fetch"],
-  appliesSkills: ["js.debugging", "lx.services", "lx.text-processing"],
-  prerequisites: ["cap-dispatch-outage", "js-fetch-tracking-json", "net-ports-listeners"],
+  skills: ["net.firewalls", "net.ports", "js.fetch"],
+  appliesSkills: ["net.troubleshooting", "js.debugging", "lx.services", "lx.text-processing"],
+  prerequisites: ["cap-dispatch-outage", "js-fetch-tracking-json", "net-firewall-scoped-allow"],
   brief: {
     from: "Aiko Tanaka, Frontend engineer",
     channel: "#dispatch-dashboard",

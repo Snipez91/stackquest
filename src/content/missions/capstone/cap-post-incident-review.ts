@@ -145,7 +145,7 @@ export const mission: MissionInput = {
   assessmentTypes: ["investigate-logs", "order-steps", "explain-root-cause", "interpret-output"],
   skills: ["lx.logs", "lx.troubleshooting"],
   appliesSkills: ["py.automation", "py.files", "js.error-handling", "js.async", "net.troubleshooting"],
-  prerequisites: ["cap-dispatch-outage", "js-dispatch-error-states"],
+  prerequisites: ["cap-dispatch-outage", "lx-incident-timeline", "js-dispatch-error-states"],
   brief: {
     from: "Sam Ortiz, Engineering manager",
     channel: "#post-incident-reviews",

@@ -147,8 +147,8 @@ export const mission: MissionInput = {
   minutes: 45,
   assessmentTypes: ["investigate-logs", "configure-system", "order-steps", "explain-root-cause"],
   skills: ["lx.troubleshooting", "lx.permissions", "net.dns"],
-  appliesSkills: ["lx.services", "lx.logs", "lx.users-groups", "net.ports", "net.troubleshooting", "js.fetch"],
-  prerequisites: ["cap-nightly-export-job", "lx-handoff-permissions", "net-dns-name-vs-ip"],
+  appliesSkills: ["lx.services", "lx.logs", "lx.users-groups", "net.http", "net.ports", "net.troubleshooting", "js.fetch"],
+  prerequisites: ["cap-nightly-export-job", "lx-notify-service-config", "net-http-maintenance-503"],
   brief: {
     from: "Priya Raman, SRE lead",
     channel: "#incidents",

@@ -128,3 +128,24 @@ Python and JavaScript checks run in the learner's browser, so a determined learn
 can fake those results. Linux/networking work and all questions are graded on the
 server. StackQuest is built for honest team learning, not proctored exams; the
 in-app "How scoring works" page says the same.
+
+## Verification status
+
+Last full run (2026-11-06):
+
+- `npm test`: **502 tests passed** (12 files). Covers curriculum integrity for all 52
+  missions (reference solutions pass, starters and wrong solutions fail), the
+  simulator, auth, invitations, roles and team isolation, mission completion and
+  idempotency, score-farming prevention, hint and mastery effects, review scheduling,
+  leaderboards (ties, time zones, per-track), chat persistence, authorisation, dedupe
+  and reconnect gaps, realtime isolation, execution timeouts and workspace reset.
+- `npm run typecheck`: 0 errors. `npm run lint`: clean. `npm run build`: succeeds.
+- `npm run test:e2e`: two separate browser sessions. Invite and join, a used-up invite
+  is rejected, live chat in both directions, an offline send then retry arrives
+  exactly once, both members show on the leaderboard.
+- Manual browser checks: sandbox isolation (opaque origin; app API, network and
+  storage blocked; a 1 s timeout stops an infinite loop), a Python mission end to end,
+  Linux and networking labs graded by server replay, mobile review, light mode.
+
+Not verified: a formal accessibility audit, screen-reader testing, load testing, and
+a real hosted deployment.

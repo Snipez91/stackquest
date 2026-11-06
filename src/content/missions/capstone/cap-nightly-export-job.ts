@@ -151,7 +151,7 @@ export const mission: MissionInput = {
   assessmentTypes: ["investigate-logs", "configure-system", "interpret-output"],
   skills: ["lx.environment", "py.automation"],
   appliesSkills: ["lx.permissions", "lx.scripting", "lx.logs", "py.exceptions"],
-  prerequisites: ["py-log-crash", "lx-handoff-permissions"],
+  prerequisites: ["py-log-crash", "lx-eta-sync-env"],
   brief: {
     from: "Marco Bellini, Backend engineer",
     channel: "#data-pipelines",

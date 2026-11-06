@@ -86,7 +86,9 @@ function applyListenFrom(state: SimState, h: HostState, s: ServiceState): void {
       return undefined;
     }
   };
-  const addr = grab(lf.addressPattern);
+  const rawAddr = grab(lf.addressPattern);
+  // "any" / "*" (e.g. BIND's listen-on { any; }) mean all addresses
+  const addr = rawAddr !== undefined && /^(any|\*)$/i.test(rawAddr) ? "0.0.0.0" : rawAddr;
   const port = grab(lf.portPattern);
   s.listens = s.listens.map((l) => ({
     ...l,

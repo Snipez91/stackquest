@@ -230,11 +230,11 @@ const pkill: CommandFn = (ctx) => {
   }
   const o = opts(ctx, { flags: "fx", withArg: "u" }, rest);
   if (!o) return 2;
-  if (!o.operands.length) {
+  if (!o.operands.length && !o.opts.u) {
     ctx.err("pkill: no matching criteria specified\n");
     return 2;
   }
-  const rows = matchProcs(ctx, o.operands[0], !!o.opts.f, o.opts.u as string | undefined, !!o.opts.x);
+  const rows = matchProcs(ctx, o.operands[0] ?? "", !!o.opts.f, o.opts.u as string | undefined, !!o.opts.x);
   let code = rows.length ? 0 : 1;
   for (const r of rows) {
     const e = deliver(ctx, r.pid, sig);

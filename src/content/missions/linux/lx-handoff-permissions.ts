@@ -206,7 +206,7 @@ ${F}
         feedback: {
           what: "After running handoff-export.sh as marco for 2026-03-03, reportgen cannot read the new file — or lena (outside dispatch) can.",
           why: "Fixing today's files by hand doesn't stop the job from creating owner-only files again tomorrow; making the umask too loose (002, 022) leaks the data to every user instead.",
-          next: "Edit /opt/lumen/bin/handoff-export.sh: change umask 077 to umask 027 (new dirs 750, files 640). Test it yourself with sudo -u marco bash /opt/lumen/bin/handoff-export.sh 2026-03-09 and ls -l.",
+          next: "Edit /opt/lumen/bin/handoff-export.sh in the editor (plain sed -i fails here because it needs write access to /opt/lumen/bin itself; sudo sed -i works): change umask 077 to umask 027 (new dirs 750, files 640). Test it yourself with sudo -u marco bash /opt/lumen/bin/handoff-export.sh 2026-03-09 and ls -l.",
         },
       },
     ],
