@@ -28,7 +28,7 @@ export const useChatDrawer = () => useContext(ChatDrawerContext);
 
 export function AppShell({ me, team, teams, isAdmin, dueCount, children }: { me: Me; team: Team; teams: Team[]; isAdmin: boolean; dueCount: number; children: React.ReactNode }) {
   const pathname = usePathname();
-  const { unread, mentions } = useRealtime();
+  const { unread, mentions, status } = useRealtime();
   const [drawer, setDrawer] = useState<{ open: boolean; missionSlug?: string }>({ open: false });
   const openChat = useCallback((opts?: { missionSlug?: string }) => setDrawer({ open: true, missionSlug: opts?.missionSlug }), []);
   const inWorkspace = pathname.startsWith("/missions/") && !pathname.endsWith("/debrief");
@@ -44,14 +44,15 @@ export function AppShell({ me, team, teams, isAdmin, dueCount, children }: { me:
   return (
     <ChatDrawerContext.Provider value={{ openChat }}>
       <div className="flex min-h-screen">
-        <aside className={cn("sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border bg-surface md:flex", inWorkspace && "md:hidden xl:flex")}>
+        <aside className={cn("sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border/80 bg-surface/55 backdrop-blur-xl md:flex", inWorkspace && "md:hidden xl:flex")}>
           <div className="px-4 pt-4 pb-3">
             <Link href="/dashboard" className="text-[17px]">
               <Logo />
             </Link>
           </div>
           <TeamSwitcher team={team} teams={teams} />
-          <nav aria-label="Main" className="mt-2 flex-1 space-y-0.5 px-2">
+          <p className="hud mt-5 px-5 pb-1.5" aria-hidden>Navigation</p>
+          <nav aria-label="Main" className="flex-1 space-y-0.5 px-2">
             {nav.map((n) => {
               const active = pathname === n.href || (n.href !== "/dashboard" && pathname.startsWith(n.href));
               const b = badgeFor("badge" in n ? n.badge : undefined);
@@ -60,12 +61,17 @@ export function AppShell({ me, team, teams, isAdmin, dueCount, children }: { me:
                   key={n.href}
                   href={n.href}
                   aria-current={active ? "page" : undefined}
-                  className={cn("flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm", active ? "bg-surface-3 font-medium text-text" : "text-muted hover:bg-surface-2 hover:text-text")}
+                  className={cn(
+                    "relative flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-colors",
+                    active
+                      ? "bg-gradient-to-r from-primary/15 to-transparent font-medium text-text before:absolute before:top-1.5 before:bottom-1.5 before:left-0 before:w-[3px] before:rounded-full before:bg-primary before:shadow-[0_0_10px_var(--primary)]"
+                      : "text-muted hover:bg-surface-2/70 hover:text-text",
+                  )}
                 >
-                  <n.icon aria-hidden size={17} />
+                  <n.icon aria-hidden size={17} className={active ? "text-primary drop-shadow-[0_0_6px_var(--glow)]" : ""} />
                   <span className="flex-1">{n.label}</span>
                   {b && (
-                    <span className="rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-ink">
+                    <span className="rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-ink shadow-[0_0_10px_-2px_var(--primary)]">
                       {b.text}
                       <span className="sr-only"> ({b.sr})</span>
                     </span>
@@ -74,7 +80,11 @@ export function AppShell({ me, team, teams, isAdmin, dueCount, children }: { me:
               );
             })}
           </nav>
-          <div className="space-y-0.5 border-t border-border p-2">
+          <div className="mx-3 mb-2 flex items-center gap-2 rounded-xl border border-border/80 bg-surface-2/50 px-3 py-2">
+            <span aria-hidden className={cn("h-2 w-2 rounded-full", status === "open" ? "animate-live bg-success" : status === "connecting" || status === "reconnecting" ? "bg-warning" : "bg-danger")} />
+            <span className="hud text-[10px]">{status === "open" ? "Live link" : status === "connecting" ? "Linking…" : status === "reconnecting" ? "Re-linking…" : "Offline"}</span>
+          </div>
+          <div className="space-y-0.5 border-t border-border/80 p-2">
             <Link href="/scoring" className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted hover:bg-surface-2 hover:text-text">
               <BookOpen aria-hidden size={17} /> How scoring works
             </Link>
@@ -91,12 +101,12 @@ export function AppShell({ me, team, teams, isAdmin, dueCount, children }: { me:
 
         <div className={cn("flex min-w-0 flex-1 flex-col", inWorkspace && "md:h-screen")}>
           {team.isDemo && (
-            <div role="note" className="border-b border-warning/40 bg-warning/10 px-4 py-1.5 text-center text-xs">
-              <strong>Demo data — fictional.</strong> Teammates, activity and messages in this team are made up for demonstration.
+            <div role="note" className="border-b border-warning/30 bg-[repeating-linear-gradient(135deg,color-mix(in_oklab,var(--warning)_10%,transparent)_0_10px,transparent_10px_20px)] px-4 py-1.5 text-center text-xs">
+              <strong className="font-mono tracking-wider text-warning uppercase">Demo data — fictional.</strong> Teammates, activity and messages in this team are made up for demonstration.
             </div>
           )}
           <ConnectionBanner />
-          <header className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-border bg-bg/90 px-4 py-2 backdrop-blur md:hidden">
+          <header className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-border/80 bg-bg/70 px-4 py-2.5 backdrop-blur-xl md:hidden">
             <Link href="/dashboard">
               <Logo />
             </Link>
@@ -111,7 +121,7 @@ export function AppShell({ me, team, teams, isAdmin, dueCount, children }: { me:
         {pathname !== "/chat" && !inWorkspace && (
           <button
             onClick={() => openChat()}
-            className="fixed right-4 bottom-20 z-30 hidden items-center md:inline-flex gap-2 rounded-full border border-border-strong bg-surface-2 px-4 py-2.5 text-sm font-medium shadow-lg shadow-black/30 hover:bg-surface-3 md:bottom-5"
+            className="fixed right-4 bottom-20 z-30 hidden items-center gap-2 rounded-full border border-primary/40 bg-surface/80 px-4 py-2.5 text-sm font-medium shadow-[0_0_28px_-10px_var(--glow)] backdrop-blur-xl transition-shadow hover:shadow-[0_0_34px_-6px_var(--glow)] md:bottom-5 md:inline-flex"
             aria-label={`Open team chat${unread ? `, ${unread} unread` : ""}`}
           >
             <MessagesSquare aria-hidden size={17} />
@@ -120,13 +130,13 @@ export function AppShell({ me, team, teams, isAdmin, dueCount, children }: { me:
           </button>
         )}
 
-        <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-border bg-surface/95 backdrop-blur md:hidden">
+        <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-border/80 bg-surface/70 backdrop-blur-xl md:hidden">
           {nav.slice(0, 5).map((n) => {
             const active = pathname === n.href || (n.href !== "/dashboard" && pathname.startsWith(n.href));
             const b = badgeFor("badge" in n ? n.badge : undefined);
             return (
-              <Link key={n.href} href={n.href} aria-current={active ? "page" : undefined} className={cn("relative flex flex-col items-center gap-0.5 py-2 text-[11px]", active ? "text-text" : "text-muted")}>
-                <n.icon aria-hidden size={19} />
+              <Link key={n.href} href={n.href} aria-current={active ? "page" : undefined} className={cn("relative flex flex-col items-center gap-0.5 py-2 text-[11px]", active ? "text-primary" : "text-muted")}>
+                <n.icon aria-hidden size={19} className={active ? "drop-shadow-[0_0_6px_var(--glow)]" : ""} />
                 {n.label.replace("Learning paths", "Paths")}
                 {b && (
                   <span className="absolute top-1 right-[22%] rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-ink">
@@ -159,8 +169,8 @@ function ChatDrawer({ me, missionSlug, onClose }: { me: Me; missionSlug?: string
   }, [onClose]);
   return (
     <div className="fixed inset-0 z-40 flex justify-end">
-      <button aria-label="Close chat" className="absolute inset-0 bg-black/40" onClick={onClose} tabIndex={-1} />
-      <div ref={ref} role="dialog" aria-modal="true" aria-label="Team chat" className="animate-rise relative flex h-full w-full max-w-md flex-col border-l border-border bg-surface shadow-2xl">
+      <button aria-label="Close chat" className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={onClose} tabIndex={-1} />
+      <div ref={ref} role="dialog" aria-modal="true" aria-label="Team chat" className="animate-rise relative flex h-full w-full max-w-md flex-col border-l border-primary/25 bg-surface/95 shadow-[0_0_60px_-20px_var(--glow)] backdrop-blur-xl">
         <div className="flex items-center justify-between border-b border-border px-3 py-2">
           <span className="text-sm font-semibold">Team chat</span>
           <div className="flex items-center gap-1">
@@ -183,8 +193,8 @@ function ChatDrawer({ me, missionSlug, onClose }: { me: Me; missionSlug?: string
 function TeamSwitcher({ team, teams }: { team: Team; teams: Team[] }) {
   if (teams.length <= 1) {
     return (
-      <div className="mx-3 rounded-lg border border-border bg-surface-2 px-3 py-2">
-        <div className="text-[11px] text-faint">Team</div>
+      <div className="mx-3 rounded-xl border border-border/80 bg-surface-2/50 px-3 py-2">
+        <div className="hud text-[10px]">Team</div>
         <div className="truncate text-sm font-medium">{team.name}</div>
       </div>
     );

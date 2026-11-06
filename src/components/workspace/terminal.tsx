@@ -63,13 +63,13 @@ export function Terminal({
   const history = sim.history;
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-code font-mono text-[13px]" onClick={() => inputRef.current?.focus()}>
+    <div className="scanlines flex h-full min-h-0 flex-col bg-code font-mono text-[13px]" onClick={() => inputRef.current?.focus()}>
       <div ref={logRef} role="log" aria-live="polite" aria-label="Terminal output" className="min-h-0 flex-1 overflow-y-auto px-3 py-2 leading-relaxed">
         {lines.length === 0 && <p className="text-faint">Simulated shell. Type <span className="text-text">help</span> to list supported commands.</p>}
         {lines.map((l, i) =>
           l.kind === "cmd" ? (
             <div key={i} className="whitespace-pre-wrap break-all">
-              <span className="text-lx">{l.prompt}</span> <span className="text-text">{l.text}</span>
+              <span className="prompt-glow text-lx">{l.prompt}</span> <span className="text-text">{l.text}</span>
             </div>
           ) : (
             <div key={i} className={cn("whitespace-pre-wrap break-all", l.kind === "err" ? "text-danger" : l.kind === "info" ? "text-primary" : "text-text/90")}>
@@ -91,7 +91,7 @@ export function Terminal({
           if (!disabled) run(input);
         }}
       >
-        <label htmlFor="term-input" className="shrink-0 text-lx">
+        <label htmlFor="term-input" className="prompt-glow shrink-0 text-lx">
           {prompt}
           <span className="sr-only"> command</span>
         </label>
@@ -101,7 +101,7 @@ export function Terminal({
           value={input}
           disabled={disabled}
           onChange={(e) => setInput(e.target.value)}
-          className="min-w-0 flex-1 bg-transparent text-text outline-none"
+          className="min-w-0 flex-1 bg-transparent text-text caret-[var(--lx)] outline-none"
           autoComplete="off"
           autoCapitalize="off"
           spellCheck={false}

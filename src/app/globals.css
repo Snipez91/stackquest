@@ -1,58 +1,68 @@
 @import "tailwindcss";
 
 /*
- * StackQuest design tokens. Dark is the default; light mode is opt-in via
- * data-theme="light" on <html>. Text/background pairs meet WCAG 2.2 AA (4.5:1+).
+ * StackQuest design tokens — "mission control": space-black base, glass
+ * panels, neon cyan → violet accents. Dark is the default; light mode is opt-in
+ * via data-theme="light". Text/background pairs meet WCAG 2.2 AA (4.5:1+);
+ * glows are decoration only, never the sole carrier of meaning.
  */
 :root {
-  --bg: #0a0d13;
-  --surface: #10141c;
-  --surface-2: #161b25;
-  --surface-3: #1d2330;
-  --border: #252c3a;
-  --border-strong: #334055;
-  --text: #e7eaf0;
-  --muted: #a0aabb;
-  --faint: #7d889b;
-  --primary: #8aa4ff;
-  --primary-strong: #6d8bff;
-  --primary-ink: #0a0d13;
-  --success: #4ade80;
-  --warning: #fbbf24;
-  --danger: #f87171;
-  --py: #6aa8ff;
-  --lx: #3fd69a;
-  --js: #f5c04a;
-  --net: #b394ff;
-  --cap: #ff8a9a;
-  --focus: #ffd166;
-  --code-bg: #0d1118;
+  --bg: #04060c;
+  --surface: #0a0f1e;
+  --surface-2: #0f1629;
+  --surface-3: #172039;
+  --border: #1b2643;
+  --border-strong: #2b3b63;
+  --text: #e9f1ff;
+  --muted: #a3b3d1;
+  --faint: #7d8eae;
+  --primary: #5ce1ff;
+  --primary-strong: #2fd0f5;
+  --primary-ink: #021019;
+  --accent: #a98bff;
+  --accent-2: #ff6bd5;
+  --success: #3df5a0;
+  --warning: #ffcf4a;
+  --danger: #ff6b7f;
+  --py: #6cb6ff;
+  --lx: #3df5a0;
+  --js: #ffd34d;
+  --net: #b896ff;
+  --cap: #ff7aa8;
+  --focus: #ffe066;
+  --code-bg: #060a15;
+  --glow: color-mix(in oklab, var(--primary) 45%, transparent);
+  --grid-line: rgba(92, 225, 255, 0.045);
   color-scheme: dark;
 }
 
 [data-theme="light"] {
-  --bg: #f6f7fa;
+  --bg: #f3f6fc;
   --surface: #ffffff;
-  --surface-2: #f0f2f6;
-  --surface-3: #e6e9f0;
-  --border: #d7dce5;
-  --border-strong: #b9c1cf;
-  --text: #141821;
-  --muted: #4a5466;
-  --faint: #5f6a7d;
-  --primary: #3550d6;
-  --primary-strong: #2840b8;
+  --surface-2: #eef2fa;
+  --surface-3: #e2e8f5;
+  --border: #d3dbeb;
+  --border-strong: #b3c0da;
+  --text: #0c1424;
+  --muted: #45516a;
+  --faint: #59667f;
+  --primary: #086480;
+  --primary-strong: #064d61;
   --primary-ink: #ffffff;
-  --success: #15803d;
-  --warning: #a16207;
-  --danger: #b91c1c;
+  --accent: #6a3fd6;
+  --accent-2: #b8268f;
+  --success: #0c6a3c;
+  --warning: #855000;
+  --danger: #c0283d;
   --py: #1f5fc4;
   --lx: #0f7a52;
   --js: #8a6100;
   --net: #6b3fd1;
   --cap: #b4233c;
   --focus: #b45309;
-  --code-bg: #f3f5f9;
+  --code-bg: #f1f4fa;
+  --glow: color-mix(in oklab, var(--primary) 25%, transparent);
+  --grid-line: rgba(11, 117, 147, 0.06);
   color-scheme: light;
 }
 
@@ -69,6 +79,8 @@
   --color-primary: var(--primary);
   --color-primary-strong: var(--primary-strong);
   --color-primary-ink: var(--primary-ink);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
@@ -80,26 +92,58 @@
   --color-code: var(--code-bg);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: var(--font-grotesk), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
   background: var(--bg);
 }
+
+/* Aurora glows + a faint blueprint grid, fixed behind everything. */
 body {
-  background: var(--bg);
   color: var(--text);
   font-feature-settings: "cv11", "ss01";
+  background:
+    radial-gradient(1100px 620px at 8% -12%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 62%),
+    radial-gradient(900px 560px at 105% -5%, color-mix(in oklab, var(--primary) 13%, transparent), transparent 60%),
+    radial-gradient(800px 500px at 60% 115%, color-mix(in oklab, var(--accent-2) 7%, transparent), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 40%, transparent 100%);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
 }
 
 /* Visible focus for keyboard users everywhere. */
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 ::selection {
   background: color-mix(in oklab, var(--primary) 35%, transparent);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -116,29 +160,81 @@ body {
 [data-reduce-motion="true"] *::before,
 [data-reduce-motion="true"] *::after {
   animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
 }
 
+/* Glass panel with a soft top highlight. */
 @utility card {
-  @apply rounded-xl border border-border bg-surface;
+  @apply rounded-2xl border border-border bg-surface/75 backdrop-blur-xl;
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.04),
+    0 18px 40px -24px rgb(0 0 0 / 0.75);
+}
+/* Gradient "neon" outline for hero panels. */
+@utility neon {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, color-mix(in oklab, var(--primary) 70%, transparent), transparent 35%, transparent 65%, color-mix(in oklab, var(--accent) 70%, transparent));
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.02),
+    0 0 48px -16px var(--glow),
+    0 18px 40px -24px rgb(0 0 0 / 0.75);
+}
+@utility hud {
+  @apply font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-faint;
+}
+@utility text-gradient {
+  background: linear-gradient(100deg, var(--text) 10%, var(--primary) 55%, var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50;
 }
 @utility btn-primary {
-  @apply btn bg-primary text-primary-ink hover:bg-primary-strong;
+  @apply btn text-primary-ink;
+  background: linear-gradient(100deg, var(--primary), color-mix(in oklab, var(--primary) 45%, var(--accent)));
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--primary) 50%, transparent),
+    0 6px 24px -8px var(--glow);
+  &:hover:not(:disabled) {
+    filter: brightness(1.08) saturate(1.1);
+    box-shadow:
+      0 0 0 1px var(--primary),
+      0 8px 32px -6px var(--glow);
+  }
 }
 @utility btn-secondary {
-  @apply btn border border-border-strong bg-surface-2 text-text hover:bg-surface-3;
+  @apply btn border border-border-strong bg-surface-2/70 text-text backdrop-blur hover:border-primary/60 hover:bg-surface-3/80;
+  &:hover:not(:disabled) {
+    box-shadow: 0 0 22px -10px var(--glow);
+  }
 }
 @utility btn-ghost {
-  @apply btn text-muted hover:bg-surface-2 hover:text-text;
+  @apply btn text-muted hover:bg-surface-2/80 hover:text-text;
 }
 @utility btn-danger {
   @apply btn border border-danger/50 text-danger hover:bg-danger/10;
 }
 @utility input {
-  @apply w-full rounded-lg border border-border-strong bg-surface-2 px-3 py-2 text-sm text-text placeholder:text-faint focus:border-primary focus:outline-none;
+  @apply w-full rounded-xl border border-border-strong bg-surface-2/70 px-3 py-2 text-sm text-text transition-shadow placeholder:text-faint focus:border-primary focus:outline-none;
+  &:focus {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent), 0 0 24px -10px var(--glow);
+  }
 }
 @utility label {
   @apply mb-1.5 block text-sm font-medium text-text;
@@ -203,4 +299,54 @@ body {
 }
 .animate-rise {
   animation: sq-rise 0.25s ease-out both;
+}
+
+@keyframes sq-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--success) 60%, transparent);
+  }
+  50% {
+    opacity: 0.85;
+    box-shadow: 0 0 0 5px transparent;
+  }
+}
+.animate-live {
+  animation: sq-pulse 2.4s ease-in-out infinite;
+}
+@keyframes sq-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+/* A thin light sweep across progress fills. Decorative only. */
+.sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.35), transparent);
+  animation: sq-sweep 3.2s ease-in-out infinite;
+}
+
+/* Faint CRT scanlines for terminal panels (dark theme only). Decorative. */
+.scanlines {
+  position: relative;
+}
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgb(255 255 255 / 0.018) 0 1px, transparent 1px 3px);
+}
+[data-theme="light"] .scanlines::after {
+  display: none;
+}
+.prompt-glow {
+  text-shadow: 0 0 10px color-mix(in oklab, var(--lx) 55%, transparent);
 }

@@ -568,7 +568,7 @@ export function Workspace({ mission, attempt: initial, theme, previouslyComplete
   return (
     <div className="flex min-h-0 flex-col md:h-full">
       {/* Top bar */}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border bg-surface px-4 py-2.5">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/80 bg-surface/70 px-4 py-2.5 backdrop-blur-xl">
         <Link href={`/paths/${mission.track}`} className="btn-ghost -ml-2 px-2 py-1" aria-label="Back to learning path">
           <ChevronLeft size={18} aria-hidden />
         </Link>
@@ -684,7 +684,7 @@ export function Workspace({ mission, attempt: initial, theme, previouslyComplete
 
       {/* One copy of each panel. md: brief | work, questions below work. xl: three columns. */}
       <div className="grid min-h-0 flex-1 md:grid-cols-[minmax(300px,380px)_1fr] md:grid-rows-[minmax(0,1fr)_auto] md:overflow-y-auto xl:grid-cols-[minmax(320px,400px)_1fr_minmax(320px,400px)] xl:grid-rows-1 xl:overflow-hidden">
-        <aside className={cn("min-h-0 border-r border-border bg-surface max-md:min-h-[60vh] md:row-span-2 xl:row-span-1", mobileTab !== "brief" && "max-md:hidden")}>{left}</aside>
+        <aside className={cn("min-h-0 border-r border-border/80 bg-surface/60 backdrop-blur-xl max-md:min-h-[60vh] md:row-span-2 xl:row-span-1", mobileTab !== "brief" && "max-md:hidden")}>{left}</aside>
         <section aria-label="Workspace" className={cn("min-h-0 min-w-0 md:min-h-[560px] xl:min-h-0", mobileTab !== "work" && "max-md:hidden")}>
           {workArea}
         </section>
@@ -708,7 +708,7 @@ export function Workspace({ mission, attempt: initial, theme, previouslyComplete
 
 function Step({ done, label }: { done: boolean; label: string }) {
   return (
-    <li className={cn("flex items-center gap-1.5 rounded-full border px-2.5 py-0.5", done ? "border-success/50 text-success" : "border-border text-muted")}>
+    <li className={cn("flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-mono text-[11px] uppercase tracking-wider", done ? "border-success/50 text-success shadow-[0_0_12px_-4px_var(--success)]" : "border-border text-muted")}>
       {done ? <Check size={12} aria-hidden /> : <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />}
       {label}
       <span className="sr-only">{done ? " (done)" : " (not done yet)"}</span>

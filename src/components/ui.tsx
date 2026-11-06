@@ -15,7 +15,7 @@ export const TRACK_META: Record<string, { label: string; color: string; text: st
 export function TrackPill({ track, className }: { track: string; className?: string }) {
   const t = TRACK_META[track] ?? TRACK_META.python;
   return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium", t.border, t.bg, t.text, className)}>
+    <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium", t.border, t.bg, t.text, className)} style={{ boxShadow: `0 0 14px -6px ${t.color}` }}>
       <span aria-hidden className="font-mono text-[10px] opacity-80">{t.short}</span>
       {t.label}
     </span>
@@ -38,11 +38,12 @@ export function Card({ children, className, as: As = "section" }: { children: Re
 
 export function PageHeader({ title, description, actions, eyebrow }: { title: string; description?: ReactNode; actions?: ReactNode; eyebrow?: ReactNode }) {
   return (
-    <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        {eyebrow && <div className="mb-1.5">{eyebrow}</div>}
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-[28px]">{title}</h1>
-        {description && <p className="mt-1.5 max-w-2xl text-[15px] text-muted">{description}</p>}
+    <header className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="min-w-0">
+        {eyebrow && <div className="mb-2">{eyebrow}</div>}
+        <h1 className="text-[26px] font-semibold leading-tight tracking-tight sm:text-[32px]">{title}</h1>
+        <div aria-hidden className="mt-2.5 h-px w-24 bg-gradient-to-r from-primary via-accent to-transparent" />
+        {description && <p className="mt-2.5 max-w-2xl text-[15px] text-muted">{description}</p>}
       </div>
       {actions && <div className="flex shrink-0 flex-wrap gap-2">{actions}</div>}
     </header>
@@ -51,6 +52,7 @@ export function PageHeader({ title, description, actions, eyebrow }: { title: st
 
 export function Progress({ value, max = 100, label, color, className }: { value: number; max?: number; label: string; color?: string; className?: string }) {
   const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
+  const c = color ?? "var(--primary)";
   return (
     <div
       role="progressbar"
@@ -58,9 +60,12 @@ export function Progress({ value, max = 100, label, color, className }: { value:
       aria-valuenow={Math.round(value)}
       aria-valuemin={0}
       aria-valuemax={max}
-      className={cn("h-2 w-full overflow-hidden rounded-full bg-surface-3", className)}
+      className={cn("h-1.5 w-full overflow-hidden rounded-full bg-surface-3/80 ring-1 ring-white/[0.03]", className)}
     >
-      <div className="h-full rounded-full transition-[width] duration-500" style={{ width: `${pct}%`, background: color ?? "var(--primary)" }} />
+      <div
+        className={cn("relative h-full overflow-hidden rounded-full transition-[width] duration-700 ease-out", pct > 0 && pct < 100 && "sweep")}
+        style={{ width: `${pct}%`, background: `linear-gradient(90deg, color-mix(in oklab, ${c} 55%, transparent), ${c})`, boxShadow: pct > 0 ? `0 0 12px -2px ${c}` : undefined }}
+      />
     </div>
   );
 }
@@ -125,9 +130,10 @@ export function Markdown({ source, className }: { source: string; className?: st
 
 export function Stat({ label, value, hint }: { label: string; value: ReactNode; hint?: ReactNode }) {
   return (
-    <div className="rounded-lg border border-border bg-surface-2 p-3">
-      <div className="text-xs text-muted">{label}</div>
-      <div className="mt-1 text-xl font-semibold tabular-nums">{value}</div>
+    <div className="card relative overflow-hidden p-3.5">
+      <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+      <div className="hud">{label}</div>
+      <div className="mt-1.5 font-[family-name:var(--font-display)] text-2xl font-semibold tabular-nums">{value}</div>
       {hint && <div className="mt-0.5 text-xs text-faint">{hint}</div>}
     </div>
   );
