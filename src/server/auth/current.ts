@@ -6,7 +6,9 @@ import { getDb } from "../db";
 import { activeMembership } from "../teams";
 import { createSession, deleteSession, userForSessionToken, type PublicUser } from "./core";
 
-export const SESSION_COOKIE = process.env.NODE_ENV === "production" ? "__Host-sq_session" : "sq_session";
+// Secure cookies need HTTPS. An http:// APP_URL (LAN testing only) turns them off.
+const SECURE_COOKIE = process.env.NODE_ENV === "production" && !process.env.APP_URL?.startsWith("http://");
+export const SESSION_COOKIE = SECURE_COOKIE ? "__Host-sq_session" : "sq_session";
 
 export async function clientIp(): Promise<string> {
   const h = await headers();
@@ -20,7 +22,7 @@ export async function startSession(userId: string) {
   const { token, expiresAt } = await createSession(db, userId, h.get("user-agent"));
   (await cookies()).set(SESSION_COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: SECURE_COOKIE,
     sameSite: "lax",
     path: "/",
     expires: expiresAt,

@@ -36,6 +36,11 @@ For real team use, add a payment method and switch to `plan: starter` (web, roug
 US$7/month) and `plan: basic-256mb` (Postgres, a few dollars a month) in
 `render.yaml`, or change the plans in the Render Dashboard.
 
+## Option C — your own server (homelab)
+
+See [`SELF_HOSTING.md`](../SELF_HOSTING.md): `./start.sh` runs the app, Postgres and
+nightly backups with Docker Compose, with optional Cloudflare Tunnel for HTTPS.
+
 ## Option B — any container host
 
 ```bash

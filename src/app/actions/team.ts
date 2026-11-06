@@ -7,7 +7,7 @@ import { z } from "zod";
 import { getMission } from "@/content";
 import { weekStartDay } from "@/lib/time";
 import { getDb } from "@/server/db";
-import { raceEntries, races, teamGoals } from "@/server/db/schema";
+import { raceEntries, races, teamGoals, teams } from "@/server/db/schema";
 import { clientIp, requireContext, requireUser } from "@/server/auth/current";
 import { AppError } from "@/server/errors";
 import {
@@ -54,7 +54,12 @@ export async function joinByLinkAction(_: FormState, form: FormData): Promise<Fo
 export async function createTeamAction(_: FormState, form: FormData): Promise<FormState> {
   const user = await requireUser();
   try {
-    await createTeam(await getDb(), user.id, { name: String(form.get("name") ?? ""), timezone: String(form.get("timezone") ?? "UTC") });
+    const db = await getDb();
+    // Self-hosted servers can allow only the first team; everyone else joins by invite.
+    if (process.env.TEAM_CREATION === "first-only" && (await db.select({ id: teams.id }).from(teams).limit(1)).length > 0) {
+      throw new AppError("forbidden", "This server hosts a single team. Ask a team admin for an invitation link.");
+    }
+    await createTeam(db, user.id, { name: String(form.get("name") ?? ""), timezone: String(form.get("timezone") ?? "UTC") });
   } catch (e) {
     return fail(e);
   }

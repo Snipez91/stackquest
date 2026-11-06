@@ -33,6 +33,10 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+!.env.homelab.example
+
+# self-hosted database backups
+/backups
 
 # vercel
 .vercel

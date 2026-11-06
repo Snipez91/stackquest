@@ -24,6 +24,11 @@ review it later (spaced) → apply it in a new context (transfer)**.
 > complete professional mastery. Each track page lists what is covered and what is
 > future work. Mastery numbers are learning *estimates*, not certifications.
 
+## Self-hosting
+
+To run it on your own server with Docker, see [SELF_HOSTING.md](SELF_HOSTING.md)
+(`./start.sh`: app + Postgres + nightly backups, optional Cloudflare Tunnel).
+
 ## Quick start (local, no Docker)
 
 Requirements: Node.js 20.9+ (tested on Node 24/26), npm.
@@ -79,6 +84,7 @@ See [`.env.example`](.env.example). Summary:
 | `AUTO_MIGRATE` | no | `false` to run migrations as a separate release step |
 | `DEMO_MODE` | no | `true` seeds a fictional demo team |
 | `PGLITE_DIR` | no | Local PGlite location (`memory` for ephemeral) |
+| `TEAM_CREATION` | no | `first-only`: after the first team, accounts join by invite only. Default `open`. |
 
 ## Architecture
 

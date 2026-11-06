@@ -1,0 +1,80 @@
+# StackQuest self-hosted stack: app + Postgres + nightly backups (+ optional Cloudflare Tunnel).
+# Start with ./start.sh (creates .env on first run). See SELF_HOSTING.md.
+name: stackquest
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: stackquest
+      POSTGRES_USER: stackquest
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (run ./start.sh)}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stackquest -d stackquest"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build: .
+    image: stackquest:local
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://stackquest:${POSTGRES_PASSWORD}@db:5432/stackquest
+      DATABASE_SSL: "false" # private Docker network
+      APP_URL: ${APP_URL:?Set APP_URL in .env (run ./start.sh)}
+      DEMO_MODE: ${DEMO_MODE:-false}
+      TEAM_CREATION: ${TEAM_CREATION:-first-only}
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-3000}:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+
+  backup:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGHOST: db
+      PGUSER: stackquest
+      PGDATABASE: stackquest
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+    volumes:
+      - ./backups:/backups
+    # One compressed dump at start-up, then every 24 hours; old dumps are pruned.
+    entrypoint:
+      - sh
+      - -c
+      - |
+        while true; do
+          f=/backups/stackquest-$$(date -u +%Y%m%d-%H%M%S).dump
+          if pg_dump -Fc -f "$$f.tmp"; then mv "$$f.tmp" "$$f"; echo "backup: wrote $$f"; else rm -f "$$f.tmp"; echo "backup: FAILED"; fi
+          find /backups -name 'stackquest-*.dump' -mtime +$$KEEP_DAYS -delete
+          sleep 86400
+        done
+
+  tunnel:
+    image: cloudflare/cloudflared:2024.12.2
+    restart: unless-stopped
+    profiles: ["tunnel"]
+    depends_on:
+      - app
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+
+volumes:
+  pgdata:
