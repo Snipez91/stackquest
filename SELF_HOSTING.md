@@ -74,8 +74,12 @@ learn.example.com {
 
 ## 3. First sign-in
 
-1. Open the address and **create an account**. The first account creates the team
-   and becomes its admin.
+1. **The person who will run the team** opens the address, creates an account and
+   creates the team. Whoever creates the team becomes its admin, and with
+   `TEAM_CREATION=first-only` no second team can be made. If you're only hosting
+   the server for someone else, check `/api/health` instead of creating the team
+   yourself. If you created it by mistake: invite them, make them admin on the Team
+   page, then remove yourself.
 2. Go to **Admin → Create invitation link** and send links to teammates. Links
    expire and can be single-use. There's no email, so you share them yourself.
 3. With `TEAM_CREATION=first-only` (the default), nobody else can create a separate
