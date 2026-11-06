@@ -1,0 +1,206 @@
+@import "tailwindcss";
+
+/*
+ * StackQuest design tokens. Dark is the default; light mode is opt-in via
+ * data-theme="light" on <html>. Text/background pairs meet WCAG 2.2 AA (4.5:1+).
+ */
+:root {
+  --bg: #0a0d13;
+  --surface: #10141c;
+  --surface-2: #161b25;
+  --surface-3: #1d2330;
+  --border: #252c3a;
+  --border-strong: #334055;
+  --text: #e7eaf0;
+  --muted: #a0aabb;
+  --faint: #7d889b;
+  --primary: #8aa4ff;
+  --primary-strong: #6d8bff;
+  --primary-ink: #0a0d13;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --py: #6aa8ff;
+  --lx: #3fd69a;
+  --js: #f5c04a;
+  --net: #b394ff;
+  --cap: #ff8a9a;
+  --focus: #ffd166;
+  --code-bg: #0d1118;
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg: #f6f7fa;
+  --surface: #ffffff;
+  --surface-2: #f0f2f6;
+  --surface-3: #e6e9f0;
+  --border: #d7dce5;
+  --border-strong: #b9c1cf;
+  --text: #141821;
+  --muted: #4a5466;
+  --faint: #5f6a7d;
+  --primary: #3550d6;
+  --primary-strong: #2840b8;
+  --primary-ink: #ffffff;
+  --success: #15803d;
+  --warning: #a16207;
+  --danger: #b91c1c;
+  --py: #1f5fc4;
+  --lx: #0f7a52;
+  --js: #8a6100;
+  --net: #6b3fd1;
+  --cap: #b4233c;
+  --focus: #b45309;
+  --code-bg: #f3f5f9;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-ink: var(--primary-ink);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-py: var(--py);
+  --color-lx: var(--lx);
+  --color-js: var(--js);
+  --color-net: var(--net);
+  --color-cap: var(--cap);
+  --color-code: var(--code-bg);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+html {
+  background: var(--bg);
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-feature-settings: "cv11", "ss01";
+}
+
+/* Visible focus for keyboard users everywhere. */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--primary) 35%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+[data-reduce-motion="true"] *,
+[data-reduce-motion="true"] *::before,
+[data-reduce-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+}
+
+@utility card {
+  @apply rounded-xl border border-border bg-surface;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-primary text-primary-ink hover:bg-primary-strong;
+}
+@utility btn-secondary {
+  @apply btn border border-border-strong bg-surface-2 text-text hover:bg-surface-3;
+}
+@utility btn-ghost {
+  @apply btn text-muted hover:bg-surface-2 hover:text-text;
+}
+@utility btn-danger {
+  @apply btn border border-danger/50 text-danger hover:bg-danger/10;
+}
+@utility input {
+  @apply w-full rounded-lg border border-border-strong bg-surface-2 px-3 py-2 text-sm text-text placeholder:text-faint focus:border-primary focus:outline-none;
+}
+@utility label {
+  @apply mb-1.5 block text-sm font-medium text-text;
+}
+@utility kbd {
+  @apply rounded border border-border-strong bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] text-muted;
+}
+
+@layer components {
+  .prose-sq {
+    @apply text-[15px] leading-relaxed text-text;
+  }
+  .prose-sq p {
+    @apply my-2.5;
+  }
+  .prose-sq h3,
+  .prose-sq h4 {
+    @apply mt-4 mb-1.5 font-semibold;
+  }
+  .prose-sq ul {
+    @apply my-2 list-disc pl-5;
+  }
+  .prose-sq ol {
+    @apply my-2 list-decimal pl-5;
+  }
+  .prose-sq li {
+    @apply my-1;
+  }
+  .prose-sq code {
+    @apply rounded bg-surface-3 px-1 py-0.5 font-mono text-[0.85em];
+  }
+  .prose-sq pre {
+    @apply my-3 overflow-x-auto rounded-lg border border-border bg-code p-3 font-mono text-[13px] leading-snug;
+  }
+  .prose-sq pre code {
+    @apply bg-transparent p-0;
+  }
+  .prose-sq strong {
+    @apply font-semibold;
+  }
+  .prose-sq a {
+    @apply text-primary underline underline-offset-2;
+  }
+  .prose-sq table {
+    @apply my-3 w-full border-collapse text-sm;
+  }
+  .prose-sq th,
+  .prose-sq td {
+    @apply border border-border px-2 py-1 text-left;
+  }
+}
+
+@keyframes sq-rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-rise {
+  animation: sq-rise 0.25s ease-out both;
+}
