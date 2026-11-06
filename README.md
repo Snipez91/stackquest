@@ -153,5 +153,10 @@ Last full run (2026-11-06):
   storage blocked; a 1 s timeout stops an infinite loop), a Python mission end to end,
   Linux and networking labs graded by server replay, mobile review, light mode.
 
+- Docker Compose self-hosting (from a clean `git archive` extract): `./start.sh` builds and
+  starts app + Postgres 17 + backups; `/api/health` is healthy on real Postgres; the
+  two-session e2e passes against the container; backup and `./restore.sh` round-trip;
+  `TEAM_CREATION=first-only` refuses a second team.
+
 Not verified: a formal accessibility audit, screen-reader testing, load testing, and
 a real hosted deployment.

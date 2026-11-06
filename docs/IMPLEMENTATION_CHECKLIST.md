@@ -45,7 +45,11 @@ Durable progress record so work can resume across sessions. Update as items land
 - [x] Final verification (2026-11-06): Vitest 502/502 across 12 files; `tsc` 0 errors; ESLint clean;
       `next build` OK; Playwright two-session e2e 1/1; browser pass on sign-in, dashboard, Python
       mission end to end, networking + Linux labs, review (mobile), team, light mode, tablet layout
-- [ ] Not deployed: needs the owner's hosting account (see docs/DEPLOYMENT.md)
+- [x] Self-hosting package (2026-11-06): `docker-compose.yml` (app + Postgres 17 + nightly pg_dump +
+      optional Cloudflare Tunnel), `start.sh`, `restore.sh`, `SELF_HOSTING.md`. Tested from a clean
+      `git archive` extract: build, healthy on real Postgres, two-session e2e 1/1 against the container,
+      backup + restore, `TEAM_CREATION=first-only` blocks a second team
+- [ ] Not deployed to a public host yet (Render blueprint ready on free plans; see docs/DEPLOYMENT.md)
 
 ## Resume notes
 

@@ -83,7 +83,7 @@ learn.example.com {
    invitation. Set `open` if you want anyone to be able to start their own team.
 
 Check health any time: `curl -s http://127.0.0.1:3000/api/health` should return
-`{"ok":true,"db":"postgres",...}`.
+`{"ok":true,"db":"pg","missions":52}`.
 
 ## Day-to-day
 
